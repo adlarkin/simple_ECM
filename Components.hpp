@@ -7,39 +7,35 @@
 
 struct BaseComponent
 {
-  void Set(const int _x, const int _y, const int _z)
-  {
-    this->x = _x;
-    this->y = _y;
-    this->z = _z;
-  }
-
-  std::ostream &operator<<(std::ostream& os)
-  {
-    os << this->x << " " << this->y << " " << this->z;
-    return os;
-  }
+  friend std::ostream &operator<<(std::ostream &_os,
+      const BaseComponent &_comp);
 
   int x{0};
   int y{0};
   int z{0};
 
-  const static ComponentTypeId typeId{kInvalidComponent};
+  constexpr const static ComponentTypeId typeId{kInvalidComponent};
 };
+
+std::ostream &operator<<(std::ostream &_os, const BaseComponent &_comp)
+{
+  _os << _comp.x << " " << _comp.y << " " << _comp.z;
+  return _os;
+}
 
 struct Position : public BaseComponent
 {
-  const static ComponentTypeId typeId{1};
+  constexpr const static ComponentTypeId typeId{1};
 };
 
 struct LinearVelocity : public BaseComponent
 {
-  const static ComponentTypeId typeId{2};
+  constexpr const static ComponentTypeId typeId{2};
 };
 
 struct LinearAcceleration : public BaseComponent
 {
-  const static ComponentTypeId typeId{3};
+  constexpr const static ComponentTypeId typeId{3};
 };
 
 #endif
