@@ -13,7 +13,6 @@
 #include "Types.hh"
 #include "View.hpp"
 
-/// \brief Entity Component Manager (ECM) class
 class ECM
 {
   /// \brief Create an Entity
@@ -122,7 +121,7 @@ template<typename ...ComponentTypeTs>
 void ECM::Each(
     std::function<bool(const Entity &_entity, ComponentTypeTs*...)> _f)
 {
-  auto view = this->FindView<ComponentTypeTs ...>();
+  auto view = this->FindView<ComponentTypeTs...>();
 
   for (const auto &entity : view->Entities())
   {
@@ -139,7 +138,6 @@ std::size_t ECM::ViewCount() const
 template<typename ...ComponentTypeTs>
 View<ComponentTypeTs...> *ECM::FindView()
 {
-  //auto viewKey = std::set<ComponentTypeId> {ComponentTypeTs::typeId...};
   auto viewKey = std::vector<ComponentTypeId> {ComponentTypeTs::typeId...};
 
   // does the view already exist?

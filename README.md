@@ -64,12 +64,12 @@ In order to avoid having to cast components from `BaseComponent` to the proper d
 The template arguments for the `std::tuple` are the `View` class template component types.
 
 Another reason why `std::tuple` is used to store component data for an entity is because the tuple can be "unpacked" into a callback function, which makes retrieving and using this data from a view quick in the `ECM::Each` method.
-Instead of having to find each individual component for an entity in a view, we can simply "slice" a row of the view's "table" at the entity index to get all of the component data at once
+Instead of having to find each individual component for an entity in a view, we can simply "slice" a row of the view's "table" at the entity index to get all of the component data at once, and then apply all of this data to a callback function
 (see [std::apply](https://en.cppreference.com/w/cpp/utility/apply) for more information).
 
 ### Implementation/Design Consequences
 
-Mimicking a table for data storage allows for quick information retrieval, but more memory usage.
+Mimicking a table for data storage allows for quick information retrieval, but requires more memory usage.
 Since `std::tuple` is used, this means that the order of component types being requested when calling `ECM::Each` matters.
 Consider the following scenario:
 
