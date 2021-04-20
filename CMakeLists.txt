@@ -14,3 +14,11 @@ add_executable(ecm_demo
   Types.hh
   View.hpp
 )
+
+add_executable(benchmark
+  each_benchmark.cc
+  Components.hpp
+  Ecm.hpp
+  Types.hh
+  View.hpp
+)

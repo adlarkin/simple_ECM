@@ -14,21 +14,21 @@ int main()
     auto entity = ecm.CreateEntity();
 
     Position position;
-    position.x = i;
-    position.y = i;
-    position.z = i;
+    position.data.x = i;
+    position.data.y = i;
+    position.data.z = i;
     ecm.AddComponent<Position>(entity, position);
 
     LinearVelocity linVel;
-    linVel.x = i;
-    linVel.y = i;
-    linVel.z = i;
+    linVel.data.x = i;
+    linVel.data.y = i;
+    linVel.data.z = i;
     ecm.AddComponent<LinearVelocity>(entity, linVel);
 
     LinearAcceleration linAccel;
-    linAccel.x = i;
-    linAccel.y = i;
-    linAccel.z = i;
+    linAccel.data.x = i;
+    linAccel.data.y = i;
+    linAccel.data.z = i;
     ecm.AddComponent<LinearAcceleration>(entity, linAccel);
   }
 
@@ -50,27 +50,27 @@ int main()
   std::function<bool(const Entity &, Position *)> updatePosition =
     [](const Entity &_entity, Position *_position) -> bool
     {
-      _position->x++;
-      _position->y++;
-      _position->z++;
+      _position->data.x++;
+      _position->data.y++;
+      _position->data.z++;
       return true;
     };
 
   std::function<bool(const Entity &, LinearVelocity *)> updateLinVel =
     [](const Entity &_entity, LinearVelocity *_linVel) -> bool
     {
-      _linVel->x++;
-      _linVel->y++;
-      _linVel->z++;
+      _linVel->data.x++;
+      _linVel->data.y++;
+      _linVel->data.z++;
       return true;
     };
 
   std::function<bool(const Entity &, LinearAcceleration *)> updateLinAccel =
     [](const Entity &_entity, LinearAcceleration *_linAccel) -> bool
     {
-      _linAccel->x++;
-      _linAccel->y++;
-      _linAccel->z++;
+      _linAccel->data.x++;
+      _linAccel->data.y++;
+      _linAccel->data.z++;
       return true;
     };
 
