@@ -1,8 +1,8 @@
-#include "Components.hpp"
-#include "Ecm.hpp"
-
 #include <functional>
 #include <iostream>
+
+#include "Components.hpp"
+#include "Ecm.hpp"
 
 int main()
 {
