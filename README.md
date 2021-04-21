@@ -14,13 +14,14 @@ Views are essentially data caches that allow for very fast data retrieval.
 ```
 .
 ├── CMakeLists.txt
-├── Components.hpp  # Defines components that can be assigned to entities
-├── Ecm.hpp         # The entity component manager (ECM)
+├── Components.hpp      # Defines components that can be assigned to entities
+├── each_benchmark.cc   # Benchmark test for ECM::Each
+├── Ecm.hpp             # The entity component manager (ECM)
 ├── LICENSE
-├── main.cc         # A demo of how to use the ECM
+├── main.cc             # A demo of how to use the ECM
 ├── README.md
-├── Types.hh        # Defines fundamental types like Entity and ComponentTypeId
-└── View.hpp        # View implementation (used by the ECM)
+├── Types.hh            # Defines fundamental types like Entity and ComponentTypeId
+└── View.hpp            # View implementation (used by the ECM)
 ```
 
 ## Usage
@@ -39,6 +40,25 @@ make
 # run the demo
 ./ecm_demo
 ```
+
+### Benchmark test
+
+There's also a benchmark test that checks how long it takes to call `ECM::Each` for an ECM with a given number of entities.
+To run this benchmark test, build the project as instructed above, and then run the `benchmark` executable:
+
+```
+./benchmark
+```
+
+You can specify the number of entities to be used in the benchmark test through a command line argument.
+For example, the following command runs the benchmark test with 500 entities:
+
+```
+./benchmark 500
+```
+
+There's a similar benchmark test done for the ECM in [ign-gazebo](https://github.com/ignitionrobotics/ign-gazebo) for comparison.
+For more information about comparing the two implementations, take a look at the `ign_gazebo5_comparison` branch (https://github.com/adlarkin/simple_ECM/tree/ign_gazebo5_comparison).
 
 ## Implementation/Design Details
 
