@@ -1,5 +1,5 @@
-#ifndef VIEW_HPP_
-#define VIEW_HPP_
+#ifndef VIEW_HH_
+#define VIEW_HH_
 
 #include <set>
 #include <tuple>

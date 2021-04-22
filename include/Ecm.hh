@@ -1,5 +1,5 @@
-#ifndef ECM_HPP_
-#define ECM_HPP_
+#ifndef ECM_HH_
+#define ECM_HH_
 
 #include <cstddef>
 #include <functional>
@@ -9,9 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Components.hpp"
+#include "Components.hh"
 #include "Types.hh"
-#include "View.hpp"
+#include "View.hh"
 
 class ECM
 {

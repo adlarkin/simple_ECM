@@ -1,5 +1,5 @@
-#ifndef COMPONENTS_HPP_
-#define COMPONENTS_HPP_
+#ifndef COMPONENTS_HH_
+#define COMPONENTS_HH_
 
 #include <ostream>
 #include <string>

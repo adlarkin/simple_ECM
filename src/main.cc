@@ -1,8 +1,8 @@
 #include <functional>
 #include <iostream>
 
-#include "Components.hpp"
-#include "Ecm.hpp"
+#include "Components.hh"
+#include "Ecm.hh"
 
 int main()
 {
@@ -48,7 +48,7 @@ int main()
     };
 
   std::function<bool(const Entity &, Position *)> updatePosition =
-    [](const Entity &_entity, Position *_position) -> bool
+    [](const Entity &, Position *_position) -> bool
     {
       _position->data.x++;
       _position->data.y++;
@@ -57,7 +57,7 @@ int main()
     };
 
   std::function<bool(const Entity &, LinearVelocity *)> updateLinVel =
-    [](const Entity &_entity, LinearVelocity *_linVel) -> bool
+    [](const Entity &, LinearVelocity *_linVel) -> bool
     {
       _linVel->data.x++;
       _linVel->data.y++;
@@ -66,7 +66,7 @@ int main()
     };
 
   std::function<bool(const Entity &, LinearAcceleration *)> updateLinAccel =
-    [](const Entity &_entity, LinearAcceleration *_linAccel) -> bool
+    [](const Entity &, LinearAcceleration *_linAccel) -> bool
     {
       _linAccel->data.x++;
       _linAccel->data.y++;
