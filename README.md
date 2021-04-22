@@ -1,66 +1,77 @@
 # simple_ECM
 
-A simple entity component management system.
+This repository contains a simple implementation of an entity component management system.
+Details about the implementation can be found in the [Implementation/Design Details](#implementation/design-details) section.
 
-## Overview
+## Overview/Terminology
 
 An entity can have 0 or more components.
 This entity/component data is stored in an entity component manager (ECM).
 Data is retrieved from the ECM through views.
 Views are essentially data caches that allow for very fast data retrieval.
 
-## Project Structure
-
-```
-.
-├── CMakeLists.txt
-├── Components.hpp      # Defines components that can be assigned to entities
-├── each_benchmark.cc   # Benchmark test for ECM::Each
-├── Ecm.hpp             # The entity component manager (ECM)
-├── LICENSE
-├── main.cc             # A demo of how to use the ECM
-├── README.md
-├── Types.hh            # Defines fundamental types like Entity and ComponentTypeId
-└── View.hpp            # View implementation (used by the ECM)
-```
-
 ## Usage
 
+### Requirements
+
 `c++17` is required.
+Benchmark tests are also available that compare the performance of the simple implementation in this repository to [ENTT](https://github.com/skypjack/entt) and the ECM in [ign-gazebo](https://github.com/ignitionrobotics/ign-gazebo).
+
+If you'd like to run the benchmark tests against `ign-gazebo`, make sure that you have `ign-gazebo5` installed (instructions can be found [here](https://github.com/ignitionrobotics/ign-gazebo#binary-install)).
+
+If you'd like to run the benchmark tests against `ENTT`, make sure that you enable the `entt` submodule (run the following command in the root of this repository):
+
+```
+git submodule update --init --recursive
+```
+
+### Building
 
 Using [cmake](https://cmake.org/):
 
 ```
-# build the project
 mkdir build
 cd build
 cmake ..
 make
+```
 
-# run the demo
+### Running
+
+#### Simple Demo
+
+```
+# go to the build directory if you aren't there already
+cd build
+
 ./ecm_demo
 ```
 
-### Benchmark test
+#### Benchmark test
 
-There's also a benchmark test that checks how long it takes to call `ECM::Each` for an ECM with a given number of entities.
-To run this benchmark test, build the project as instructed above, and then run the `benchmark` executable:
+The benchmark test checks how long it takes to call `Each(...)` for an ECM with a given number of entities and components.
+As mentioned in the [requirements](#requirements) section, this benchmark test can also test `ENTT` and the ECM in `ign-gazebo` if the project was built with the proper dependencies.
+While the benchmark comparisons are somewhat apples-to-oranges since `ENTT` and `ign-gazebo` are more complex systems that introduce architectural overhead, it still provides a useful frame of reference.
+
+Running the benchmark can be done as follows:
 
 ```
-./benchmark
+# go to the build directory if you aren't there already
+cd build
+
+./benchmark_test
 ```
 
 You can specify the number of entities to be used in the benchmark test through a command line argument.
 For example, the following command runs the benchmark test with 500 entities:
 
 ```
-./benchmark 500
+./benchmark_test 500
 ```
 
-There's a similar benchmark test done for the ECM in [ign-gazebo](https://github.com/ignitionrobotics/ign-gazebo) for comparison.
-For more information about comparing the two implementations, take a look at the `ign_gazebo5_comparison` branch (https://github.com/adlarkin/simple_ECM/tree/ign_gazebo5_comparison).
-
 ## Implementation/Design Details
+
+At the time of this writing, the ECM implemented in this repository is header-only.
 
 Since this is a simple ECM, there are a few limitations:
 1. There's no support for entity/component removal (only adding entities and components are currently supported).
