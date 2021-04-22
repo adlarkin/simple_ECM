@@ -21,7 +21,8 @@ int main(int argc, char **argv)
   // all of the ECM implementations that will be benchmarked
   std::vector<std::string> implementationTypes{"simpleECM"};
 #ifdef _ENTT
-  implementationTypes.push_back("entt");
+  implementationTypes.push_back("entt view");
+  implementationTypes.push_back("entt group");
 #endif // _ENTT
 #ifdef _IGN_GAZEBO
   implementationTypes.push_back("ignGazebo");

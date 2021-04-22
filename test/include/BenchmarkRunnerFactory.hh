@@ -6,7 +6,8 @@
 
 #include "BenchmarkRunner.hh"
 #ifdef _ENTT
-  #include "EnttBenchmarkRunner.hh"
+  #include "EnttGroupBenchmarkRunner.hh"
+  #include "EnttViewBenchmarkRunner.hh"
 #endif // _ENTT
 #ifdef _IGN_GAZEBO
   #include "IgnGazeboBenchmarkRunner.hh"
@@ -24,8 +25,10 @@ struct BenchmarkRunnerFactory
     if (_type == "simpleECM")
       return new SimpleECMBenchmarkRunner();
 #ifdef _ENTT
-    else if (_type == "entt")
-      return new EnttBenchmarkRunner();
+    else if (_type == "entt view")
+      return new EnttViewBenchmarkRunner();
+    else if (_type == "entt group")
+      return new EnttGroupBenchmarkRunner();
 #endif // _ENTT
 #ifdef _IGN_GAZEBO
     else if (_type == "ignGazebo")
