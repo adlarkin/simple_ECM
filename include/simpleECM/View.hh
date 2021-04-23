@@ -5,7 +5,7 @@
 #include <tuple>
 #include <unordered_map>
 
-#include "Types.hh"
+#include "simpleECM/Types.hh"
 
 class BaseView
 {

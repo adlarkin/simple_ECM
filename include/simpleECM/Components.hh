@@ -4,7 +4,7 @@
 #include <ostream>
 #include <string>
 
-#include "Types.hh"
+#include "simpleECM/Types.hh"
 
 /// \brief A base component type, which should be inherited by other components
 struct BaseComponent

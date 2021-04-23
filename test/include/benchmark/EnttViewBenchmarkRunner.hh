@@ -1,12 +1,12 @@
-#ifndef ENTT_GROUP_BENCHMARK_RUNNER_HH_
-#define ENTT_GROUP_BENCHMARK_RUNNER_HH_
+#ifndef ENTT_VIEW_BENCHMARK_RUNNER_HH_
+#define ENTT_VIEW_BENCHMARK_RUNNER_HH_
 
 #include <entt/entity/registry.hpp>
 
-#include "BenchmarkRunner.hh"
-#include "Components.hh"
+#include "benchmark/BenchmarkRunner.hh"
+#include "simpleECM/Components.hh"
 
-class EnttGroupBenchmarkRunner : public BenchmarkRunner
+class EnttViewBenchmarkRunner : public BenchmarkRunner
 {
   /// \brief Documentation inherited
   public: void Init() final;
@@ -21,11 +21,11 @@ class EnttGroupBenchmarkRunner : public BenchmarkRunner
   private: entt::registry registry;
 };
 
-void EnttGroupBenchmarkRunner::Init()
+void EnttViewBenchmarkRunner::Init()
 {
 }
 
-void EnttGroupBenchmarkRunner::MakeEntityWithComponents()
+void EnttViewBenchmarkRunner::MakeEntityWithComponents()
 {
   const auto entity = registry.create();
   registry.emplace<Name>(entity);
@@ -40,14 +40,13 @@ void EnttGroupBenchmarkRunner::MakeEntityWithComponents()
   registry.emplace<WorldPose>(entity);
 }
 
-void EnttGroupBenchmarkRunner::EachImplementation()
+void EnttViewBenchmarkRunner::EachImplementation()
 {
   this->entityCount = 0;
-
-  auto group = registry.group<>(entt::get<Name, Static, LinearVelocity,
-      WorldLinearVelocity, AngularVelocity, WorldAngularVelocity,
-      LinearAcceleration, WorldLinearAcceleration, Pose, WorldPose>);
-  group.each(
+  auto view = registry.view<Name, Static, LinearVelocity, WorldLinearVelocity,
+       AngularVelocity, WorldAngularVelocity, LinearAcceleration,
+       WorldLinearAcceleration, Pose, WorldPose>();
+  view.each(
       [this](const auto /*_entity*/, auto &/*_static*/, auto &/*_linVel*/,
         auto &/*_worldLinVel*/, auto &/*_angularVel*/,
         auto &/*_worldAngularVel*/, auto &/*_linAccel*/,

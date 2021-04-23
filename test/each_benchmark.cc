@@ -3,10 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "BenchmarkRunner.hh"
-#include "BenchmarkRunnerFactory.hh"
-#include "Components.hh"
-#include "Ecm.hh"
+#include "benchmark/BenchmarkRunner.hh"
+#include "benchmark/BenchmarkRunnerFactory.hh"
 
 int main(int argc, char **argv)
 {
@@ -21,12 +19,33 @@ int main(int argc, char **argv)
   // all of the ECM implementations that will be benchmarked
   std::vector<std::string> implementationTypes{"simpleECM"};
 #ifdef _ENTT
-  implementationTypes.push_back("entt view");
   implementationTypes.push_back("entt group");
+  implementationTypes.push_back("entt view");
 #endif // _ENTT
 #ifdef _IGN_GAZEBO
   implementationTypes.push_back("ignGazebo");
 #endif // _IGN_GAZEBO
+
+  // creating numEntites entities with the following components (10 total):
+  //  name
+  //  static
+  //  linear velocity
+  //  world linear velocity
+  //  angular velocity
+  //  world angular velocity
+  //  linear acceleration
+  //  world linear acceleration
+  //  pose
+  //  world pose
+  const int numComponents = 10;
+  std::cout << "Creating an ECM with " << numEntities << " entities, with "
+    << numComponents << " components per entity" << std::endl;
+
+  // the number of times we will call Each(...) on the ECM
+  const int numEachCalls = 3;
+  std::cout << "Calling Each(...) " << numEachCalls << " times, searching for "
+    << numEntities << " entities with " << numComponents
+    << " components in every Each(...) call" << std::endl << std::endl;
 
   for (std::size_t typeIdx = 0; typeIdx < implementationTypes.size(); ++typeIdx)
   {
@@ -36,28 +55,8 @@ int main(int argc, char **argv)
       continue;
     std::cout << ecmType << " implementation" << std::endl << std::endl;
 
-    // creating numEntites entities with the following components (10 total):
-    //  name
-    //  static
-    //  linear velocity
-    //  world linear velocity
-    //  angular velocity
-    //  world angular velocity
-    //  linear acceleration
-    //  world linear acceleration
-    //  pose
-    //  world pose
-    const int numComponents = 10;
-
-    // the number of times we will call Each(...) on the ECM
-    const int numEachCalls = 3;
-
     // instantiate the ecm and populate it with entities/components
-    std::cout << "Creating an ECM with " << numEntities << " entities, with "
-      << numComponents << " components per entity" << std::endl;
-
     benchmarkRunner->Init();
-
     for (auto i = 0; i < numEntities; ++i)
       benchmarkRunner->MakeEntityWithComponents();
 
@@ -65,9 +64,6 @@ int main(int argc, char **argv)
     // with all of the defined components (this first Each(...) call should take
     // the longest since it has to create the view - once the view is created,
     // subsequent Each(...) calls should be noticeably faster)
-    std::cout << "Calling Each(...) " << numEachCalls << " times, searching for "
-      << numEntities << " entities with " << numComponents
-      << " components in every Each(...) call" << std::endl;
     for (auto i = 0; i < numEachCalls; ++i)
     {
       benchmarkRunner->StartTimer();

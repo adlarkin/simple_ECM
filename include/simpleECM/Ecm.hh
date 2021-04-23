@@ -9,9 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Components.hh"
-#include "Types.hh"
-#include "View.hh"
+#include "simpleECM/Components.hh"
+#include "simpleECM/Types.hh"
+#include "simpleECM/View.hh"
 
 class ECM
 {

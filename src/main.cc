@@ -1,8 +1,8 @@
 #include <functional>
 #include <iostream>
 
-#include "Components.hh"
-#include "Ecm.hh"
+#include "simpleECM/Components.hh"
+#include "simpleECM/Ecm.hh"
 
 int main()
 {

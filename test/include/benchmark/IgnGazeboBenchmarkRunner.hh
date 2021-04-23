@@ -10,7 +10,7 @@
 #include <ignition/gazebo/components/Pose.hh>
 #include <ignition/gazebo/components/Static.hh>
 
-#include "BenchmarkRunner.hh"
+#include "benchmark/BenchmarkRunner.hh"
 
 class IgnGazeboBenchmarkRunner : public BenchmarkRunner
 {

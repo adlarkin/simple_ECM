@@ -4,15 +4,15 @@
 #include <iostream>
 #include <string>
 
-#include "BenchmarkRunner.hh"
+#include "benchmark/BenchmarkRunner.hh"
 #ifdef _ENTT
-  #include "EnttGroupBenchmarkRunner.hh"
-  #include "EnttViewBenchmarkRunner.hh"
+  #include "benchmark/EnttGroupBenchmarkRunner.hh"
+  #include "benchmark/EnttViewBenchmarkRunner.hh"
 #endif // _ENTT
 #ifdef _IGN_GAZEBO
-  #include "IgnGazeboBenchmarkRunner.hh"
+  #include "benchmark/IgnGazeboBenchmarkRunner.hh"
 #endif // _IGN_GAZEBO
-#include "SimpleECMBenchmarkRunner.hh"
+#include "benchmark/SimpleECMBenchmarkRunner.hh"
 
 struct BenchmarkRunnerFactory
 {

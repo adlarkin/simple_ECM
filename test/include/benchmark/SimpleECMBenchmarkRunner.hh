@@ -3,9 +3,9 @@
 
 #include <functional>
 
-#include "BenchmarkRunner.hh"
-#include "Components.hh"
-#include "Ecm.hh"
+#include "benchmark/BenchmarkRunner.hh"
+#include "simpleECM/Components.hh"
+#include "simpleECM/Ecm.hh"
 
 class SimpleECMBenchmarkRunner : public BenchmarkRunner
 {
