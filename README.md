@@ -1,7 +1,7 @@
 # simple_ECM
 
-This repository contains a simple implementation of an entity component management system.
-Details about the implementation can be found in the [Implementation/Design Details](#implementation/design-details) section.
+This repository contains a simple implementation of an entity component system.
+Details about the implementation can be found in the [implementation and design Details](#implementation-and-design-details) section.
 
 ## Overview/Terminology
 
@@ -51,7 +51,6 @@ cd build
 
 The benchmark test checks how long it takes to call `Each(...)` for an ECM with a given number of entities and components.
 As mentioned in the [requirements](#requirements) section, this benchmark test can also test `EnTT` and the ECM in `ign-gazebo` if the project was built with the proper dependencies.
-While the benchmark comparisons are somewhat apples-to-oranges since `EnTT` and `ign-gazebo` are more complex systems that introduce architectural overhead, it still provides a useful frame of reference.
 
 Running the benchmark can be done as follows:
 
@@ -71,7 +70,7 @@ For example, the following command runs the benchmark test with 500 entities:
 
 #### Memory test
 
-As discussed in the [implementation/design consequences section](#implementation/design-consequences), the view implementation proposed in this repository should result in faster component lookup time, but may require more memory usage.
+As discussed in the [implementation and design consequences section](#implementation-and-design-consequences), the view implementation proposed in this repository should result in faster component lookup time, but may require more memory usage.
 A memory test can be run to compare the usage between the simple ECM and the ECM in `ign-gazebo`.
 The ECM in `ign-gazebo` has some additional complexities that require more memory usage, but this is still a useful reference to make sure that the simple ECM does not incur a memory overhead that is significantly greater than the memory used for the `ign-gazebo` ECM.
 
@@ -105,7 +104,7 @@ Heaptrack finished! Now run the following to investigate the data: ...
 
 Run the command specified to inspect memory usage.
 
-## Implementation/Design Details
+## Implementation and Design Details
 
 At the time of this writing, the ECM implemented in this repository is header-only.
 
@@ -134,7 +133,7 @@ Another reason why `std::tuple` is used to store component data for an entity is
 Instead of having to find each individual component for an entity in a view, we can simply "slice" a row of the view's "table" at the entity index to get all of the component data at once, and then apply all of this data to a callback function
 (see [std::apply](https://en.cppreference.com/w/cpp/utility/apply) for more information).
 
-### Implementation/Design Consequences
+### Implementation and Design Consequences
 
 Mimicking a table for data storage allows for quick information retrieval, but requires more memory usage.
 Since `std::tuple` is used, this means that the order of component types being requested when calling `ECM::Each` matters.

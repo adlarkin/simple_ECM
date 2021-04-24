@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
-#include <set>
 #include <tuple>
 #include <unordered_map>
 #include <vector>

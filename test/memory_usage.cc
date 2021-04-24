@@ -23,8 +23,8 @@ int main(int argc, char **argv)
   else
   {
     std::cerr << "Usage: " << argv[0]
-      << " <ECM implementation> [number of Entities]" << std::endl
-      << "(<ECM implementation> should either be simpleECM or ignGazeboECM"
+      << " <ECM implementation> [number of Entities]" << std::endl << std::endl
+      << "<ECM implementation> should either be simpleECM or ignGazeboECM"
       << std::endl;
     return -1;
   }

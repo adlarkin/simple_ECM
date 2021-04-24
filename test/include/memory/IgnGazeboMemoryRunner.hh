@@ -1,7 +1,6 @@
 #ifndef IGN_GAZEBO_MEMORY_RUNNER_HH_
 #define IGN_GAZEBO_MEMORY_RUNNER_HH_
 
-
 #include <ignition/gazebo/Entity.hh>
 #include <ignition/gazebo/EntityComponentManager.hh>
 #include <ignition/gazebo/components/AngularVelocity.hh>

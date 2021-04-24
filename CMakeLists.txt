@@ -1,4 +1,5 @@
-# need version 3.12 for add_compile_definitions command
+# need version 3.12 for add_compile_definitions
+# (https://cmake.org/cmake/help/latest/command/add_compile_definitions.html)
 cmake_minimum_required(VERSION 3.12)
 
 project(SimpleECM)
@@ -15,20 +16,20 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
-# see if dependencies are met to compile ign-gazebo ECM benchmark tests
+# see if dependencies are met to compile ign-gazebo ECM tests
 find_package(ignition-gazebo5 QUIET)
 if (ignition-gazebo5_FOUND)
   add_compile_definitions(_IGN_GAZEBO)
 else()
-  message(WARNING "Unable to find ign-gazebo5, so ign-gazebo ECM benchmark tests will be skipped")
+  message(WARNING "Unable to find ign-gazebo5, so ign-gazebo ECM tests will be skipped")
 endif()
 
-# see if dependencies are met to compile EnTT benchmark tests
+# see if dependencies are met to compile EnTT tests
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/entt/src/")
   add_compile_definitions(_ENTT)
   set(ENTT_INCLUDE_DIRS "entt/src")
 else()
-  message(WARNING "EnTT not found, so EnTT benchmark tests will be skipped (enable the EnTT submodule to build EnTT benchmark tests)")
+  message(WARNING "EnTT not found, so EnTT tests will be skipped (enable the EnTT submodule to build EnTT tests)")
 endif()
 
 # executable for running a simple ECM demo
@@ -39,9 +40,9 @@ target_include_directories(ecm_demo
   PRIVATE include
 )
 
-# Library for running tests (benchmark/memory). This will always support at
-# least the simple ECM tests, but will also support the ign-gazebo ECM and EnTT
-# tests if the dependencies are met
+# Library for running tests. This will always support at least the simple ECM
+# tests, but will also support the ign-gazebo ECM and EnTT tests if the
+# dependencies are met
 add_library(TestLib
   INTERFACE
 )
