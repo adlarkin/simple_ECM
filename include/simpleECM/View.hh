@@ -16,6 +16,11 @@ class BaseView
     return this->entities;
   }
 
+  /// \brief Destructor
+  public: virtual ~BaseView()
+  {
+  };
+
   /// \brief The entities in the view
   protected: std::set<Entity> entities;
 };
