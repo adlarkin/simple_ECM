@@ -1,7 +1,7 @@
 #ifndef VIEW_HH_
 #define VIEW_HH_
 
-#include <set>
+#include <unordered_set>
 #include <tuple>
 #include <unordered_map>
 
@@ -11,9 +11,39 @@ class BaseView
 {
   /// \brief Get the entities that are stored in the view
   /// \return The entities in the view
-  public: std::set<Entity> Entities() const
+  public: std::unordered_set<Entity> Entities() const
   {
     return this->entities;
+  }
+
+  /// \brief Remove an entity from the view, whether it's an entity that already
+  /// exists in the view or is a new entity to be added to the view
+  /// \param[in] _entity The entity
+  public: virtual void RemoveEntity(const Entity &_entity) = 0;
+
+  /// \brief Get all of the new entities that should be added to the view
+  /// \return The entities
+  public: std::unordered_set<Entity> NewEntities() const
+  {
+    return this->newEntities;
+  }
+
+  /// \brief Add a new entity to the view. This entity's component data should
+  /// be added to the view the next time the view is being used. If the new
+  /// entity being added already exists in the view, then this new entity is
+  /// ignored
+  /// \param[in] _entity The new entity
+  public: void AddNewEntity(const Entity &_entity)
+  {
+    if (this->entities.find(_entity) == this->entities.end())
+      this->newEntities.insert(_entity);
+  }
+
+  /// \brief Remove all of the new entities from the view. This should be called
+  /// after each new entity's component data has been added to the view
+  public: void RemoveNewEntities()
+  {
+    this->newEntities.clear();
   }
 
   /// \brief Destructor
@@ -21,8 +51,11 @@ class BaseView
   {
   };
 
+  /// \brief New entities to be added to the view
+  protected: std::unordered_set<Entity> newEntities;
+
   /// \brief The entities in the view
-  protected: std::set<Entity> entities;
+  protected: std::unordered_set<Entity> entities;
 };
 
 template<typename ...ComponentTypeTs>
@@ -47,6 +80,14 @@ class View : public BaseView
   {
     this->data[_entity] = std::make_tuple(_entity, _compPtrs...);
     this->entities.insert(_entity);
+  }
+
+  /// \brief Documentation inherited
+  public: void RemoveEntity(const Entity &_entity)
+  {
+    this->newEntities.erase(_entity);
+    this->entities.erase(_entity);
+    this->data.erase(_entity);
   }
 
   /// \brief A map of entities to their component data
