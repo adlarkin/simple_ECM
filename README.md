@@ -108,14 +108,6 @@ Run the command specified to inspect memory usage.
 
 At the time of this writing, the ECM implemented in this repository is header-only.
 
-Since this is a simple ECM, there are a few limitations:
-1. There's no support for entity/component removal (only adding entities and components are currently supported).
-2. Views are not updated after they are created.
-So, if you create an entity with a set of components _after_ creating a view with this set of components, this new entity is not added to the view.
-In other words, the view only contains entity and component data that existed at the view's creation time.
-
-The limitations above aren't difficult to address, but I have decided not to implement these features at the moment since this is a simple ECM.
-
 ### Components
 
 Components must inherit from `BaseComponent`, and need to have a unique ID.
