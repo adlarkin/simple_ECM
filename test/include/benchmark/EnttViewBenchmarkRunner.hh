@@ -1,6 +1,8 @@
 #ifndef ENTT_VIEW_BENCHMARK_RUNNER_HH_
 #define ENTT_VIEW_BENCHMARK_RUNNER_HH_
 
+#include <vector>
+
 #include <entt/entity/registry.hpp>
 
 #include "benchmark/BenchmarkRunner.hh"
@@ -9,7 +11,7 @@
 class EnttViewBenchmarkRunner : public BenchmarkRunner
 {
   /// \brief Documentation inherited
-  public: void Init() final;
+  public: void Init(const std::size_t _numEntitiesToModify) final;
 
   /// \brief Documentation inherited
   public: void MakeEntityWithComponents() final;
@@ -17,35 +19,49 @@ class EnttViewBenchmarkRunner : public BenchmarkRunner
   /// \brief Documentation inherited
   public: void EachImplementation() final;
 
+  /// \brief Documentation inherited
+  public: void RemoveAComponent() final;
+
+  /// \brief Documentation inherited
+  public: void AddAComponent() final;
+
   /// \brief Entt registry, which is like an ECM
   private: entt::registry registry;
+
+  /// \brief Keep track of the entities that should have a component removed or
+  /// added
+  private: std::vector<entt::entity> entitiesToModify;
 };
 
-void EnttViewBenchmarkRunner::Init()
+void EnttViewBenchmarkRunner::Init(const std::size_t _numEntitiesToModify)
 {
+  this->numEntitiesToModify = _numEntitiesToModify;
 }
 
 void EnttViewBenchmarkRunner::MakeEntityWithComponents()
 {
-  const auto entity = registry.create();
-  registry.emplace<Name>(entity);
-  registry.emplace<Static>(entity);
-  registry.emplace<LinearVelocity>(entity);
-  registry.emplace<WorldLinearVelocity>(entity);
-  registry.emplace<AngularVelocity>(entity);
-  registry.emplace<WorldAngularVelocity>(entity);
-  registry.emplace<LinearAcceleration>(entity);
-  registry.emplace<WorldLinearAcceleration>(entity);
-  registry.emplace<Pose>(entity);
-  registry.emplace<WorldPose>(entity);
+  const auto entity = this->registry.create();
+  this->registry.emplace<Name>(entity);
+  this->registry.emplace<Static>(entity);
+  this->registry.emplace<LinearVelocity>(entity);
+  this->registry.emplace<WorldLinearVelocity>(entity);
+  this->registry.emplace<AngularVelocity>(entity);
+  this->registry.emplace<WorldAngularVelocity>(entity);
+  this->registry.emplace<LinearAcceleration>(entity);
+  this->registry.emplace<WorldLinearAcceleration>(entity);
+  this->registry.emplace<Pose>(entity);
+  this->registry.emplace<WorldPose>(entity);
+
+  if (this->entitiesToModify.size() < this->numEntitiesToModify)
+    this->entitiesToModify.push_back(entity);
 }
 
 void EnttViewBenchmarkRunner::EachImplementation()
 {
   this->entityCount = 0;
-  auto view = registry.view<Name, Static, LinearVelocity, WorldLinearVelocity,
-       AngularVelocity, WorldAngularVelocity, LinearAcceleration,
-       WorldLinearAcceleration, Pose, WorldPose>();
+  auto view = this->registry.view<Name, Static, LinearVelocity,
+       WorldLinearVelocity, AngularVelocity, WorldAngularVelocity,
+       LinearAcceleration, WorldLinearAcceleration, Pose, WorldPose>();
   view.each(
       [this](const auto /*_entity*/, auto &/*_static*/, auto &/*_linVel*/,
         auto &/*_worldLinVel*/, auto &/*_angularVel*/,
@@ -54,6 +70,18 @@ void EnttViewBenchmarkRunner::EachImplementation()
       {
         this->entityCount++;
       });
+}
+
+void EnttViewBenchmarkRunner::RemoveAComponent()
+{
+  for (auto &entity : this->entitiesToModify)
+    this->registry.remove<LinearVelocity>(entity);
+}
+
+void EnttViewBenchmarkRunner::AddAComponent()
+{
+  for (auto &entity : this->entitiesToModify)
+    this->registry.emplace<LinearVelocity>(entity);
 }
 
 #endif
