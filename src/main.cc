@@ -79,6 +79,14 @@ int main()
       return true;
     };
 
+  std::function<bool(const Entity &, Position *, LinearVelocity *)> posLinVel =
+    [](const Entity &_entity, Position *, LinearVelocity *) -> bool
+    {
+      std::cout << "Entity " << _entity
+        << " has a position and linear velocity component" << std::endl;
+      return true;
+    };
+
   // this callback function does the same thing as printAllComponents,
   // but requests the entities in a different order and therefore uses a
   // different view
@@ -120,6 +128,8 @@ int main()
   std::cout << "The following entities have position, linear velocity, and "
     << "linear acceleration components:" << std::endl;
   ecm.Each(printAllComponents);
+  std::cout << std::endl << "-----" << std::endl << std::endl;
+  ecm.Each(posLinVel);
 
   // add components back in and check the views again
   std::cout << std::endl << "-----" << std::endl << std::endl
@@ -131,7 +141,20 @@ int main()
     << "-----" << std::endl << std::endl;
   ecm.Each(printAllComponents);
 
-  // verify that the ECM has 5 views (5 callback functions were used, with each
+  // create a brand new component to make sure it's added to the appropriate
+  // views
+  std::cout << std::endl << "-----" << std::endl << std::endl
+    << "Creating a new entity with position and linear velocity components..."
+    << std::endl;
+  auto entity = ecm.CreateEntity();
+  entities.push_back(entity);
+  ecm.AddComponent<Position>(entity, Position());
+  ecm.AddComponent<LinearVelocity>(entity, LinearVelocity());
+  std::cout << "Done creating the new entity" << std::endl << std::endl
+    << "-----" << std::endl << std::endl;
+  ecm.Each(posLinVel);
+
+  // verify that the ECM has 6 views (6 callback functions were used, with each
   // CB having a unique order of component types in the method signature)
   std::cout << std::endl << "-----" << std::endl << std::endl
     << "The ECM has " << ecm.ViewCount() << " views" << std::endl;

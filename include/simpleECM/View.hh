@@ -1,9 +1,9 @@
 #ifndef VIEW_HH_
 #define VIEW_HH_
 
-#include <unordered_set>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "simpleECM/Types.hh"
 
@@ -40,10 +40,19 @@ class BaseView
   }
 
   /// \brief Remove all of the new entities from the view. This should be called
-  /// after each new entity's component data has been added to the view
+  /// after all of the new entity component data has been added to the view
   public: void RemoveNewEntities()
   {
     this->newEntities.clear();
+  }
+
+  /// \brief See if the view holds data of a particular component type
+  /// \param[in] _typeId The component type
+  /// \return true if the view has component data of type _typeId, false
+  /// otherwise
+  public: bool virtual HasComponent(const ComponentTypeId &_typeId) const
+  {
+    return this->compTypes.find(_typeId) != this->compTypes.end();
   }
 
   /// \brief Destructor
@@ -56,12 +65,21 @@ class BaseView
 
   /// \brief The entities in the view
   protected: std::unordered_set<Entity> entities;
+
+  /// \brief The component types in the view
+  protected: std::unordered_set<ComponentTypeId> compTypes;
 };
 
 template<typename ...ComponentTypeTs>
 class View : public BaseView
 {
   private: using ComponentData = std::tuple<Entity, ComponentTypeTs*...>;
+
+  /// \brief Constructor
+  public: View()
+  {
+    this->compTypes = {ComponentTypeTs::typeId...};
+  }
 
   /// \brief Get an entity and its component data. It is assumed that the
   /// entity being requested exists in the view

@@ -163,7 +163,7 @@ void ECM::RemoveComponent(const Entity &_entity)
   // remove the entity from the views that have this component
   for (auto &[compTypes, view] : this->views)
   {
-    if (!this->HasAllComponents(_entity, compTypes))
+    if (view->HasComponent(ComponentTypeT::typeId))
       view->RemoveEntity(_entity);
   }
 }
