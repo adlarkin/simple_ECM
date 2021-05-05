@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     {
       std::cout << std::endl;
 
-      // remove components from entities, and then call each a few times
+      // remove components from entities, and then call Each(...) a few times
       benchmarkRunner->StartTimer();
       benchmarkRunner->RemoveAComponent();
       benchmarkRunner->StopTimer();
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
       }
       std::cout << std::endl;
 
-      // add components to entities, and then call each a few times
+      // add components to entities, and then call Each(...) a few times
       benchmarkRunner->StartTimer();
       benchmarkRunner->AddAComponent();
       benchmarkRunner->StopTimer();
