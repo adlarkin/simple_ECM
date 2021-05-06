@@ -58,14 +58,16 @@ Running the benchmark can be done as follows:
 # go to the build directory if you aren't there already
 cd build
 
-./benchmark_test
+# you need to specify how many entities to create. In this example, 100 entities are created
+./benchmark_test 100
 ```
 
-You can specify the number of entities to be used in the benchmark test through a command line argument.
-For example, the following command runs the benchmark test with 500 entities:
+You can also specify the number of entities that should have a component removed and added back in.
+This is useful for benchmarking `Each(...)` performance with entities whose number of components change frequently.
+For example, the following command runs the benchmark test with 100 entities, where 50 of those 100 entities have a component removed and added back in:
 
 ```
-./benchmark_test 500
+./benchmark_test 100 50
 ```
 
 #### Memory test
@@ -107,14 +109,6 @@ Run the command specified to inspect memory usage.
 ## Implementation and Design Details
 
 At the time of this writing, the ECM implemented in this repository is header-only.
-
-Since this is a simple ECM, there are a few limitations:
-1. There's no support for entity/component removal (only adding entities and components are currently supported).
-2. Views are not updated after they are created.
-So, if you create an entity with a set of components _after_ creating a view with this set of components, this new entity is not added to the view.
-In other words, the view only contains entity and component data that existed at the view's creation time.
-
-The limitations above aren't difficult to address, but I have decided not to implement these features at the moment since this is a simple ECM.
 
 ### Components
 

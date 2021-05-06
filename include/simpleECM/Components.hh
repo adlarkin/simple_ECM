@@ -21,6 +21,10 @@ struct BaseComponent
     return _comp.ToOStream(_os);
   }
 
+  /// \brief Get the derived component's typeId
+  /// \return The typeId of the derived component
+  public: virtual ComponentTypeId DerivedTypeId() const = 0;
+
   public: constexpr const static ComponentTypeId typeId{kInvalidComponent};
 };
 
@@ -31,6 +35,11 @@ struct Name : public BaseComponent
   {
     _os << this->name;
     return _os;
+  }
+
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
   }
 
   public: std::string name;
@@ -44,6 +53,11 @@ struct World : public BaseComponent
   {
     _os << "This is a world";
     return _os;
+  }
+
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
   }
 
   public: constexpr const static ComponentTypeId typeId{2};
@@ -61,6 +75,11 @@ struct Static : public BaseComponent
     return _os;
   }
 
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: bool isStatic;
   public: constexpr const static ComponentTypeId typeId{3};
 };
@@ -74,6 +93,11 @@ struct Position : public BaseComponent
     return _os;
   }
 
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: Vector3i data;
   public: constexpr const static ComponentTypeId typeId{4};
 };
@@ -81,6 +105,11 @@ struct Position : public BaseComponent
 /// \brief A component representing an entity's position in world coordinates
 struct WorldPosition : public Position
 {
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: constexpr const static ComponentTypeId typeId{5};
 };
 
@@ -93,6 +122,11 @@ struct LinearVelocity : public BaseComponent
     return _os;
   }
 
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: Vector3i data;
   public: constexpr const static ComponentTypeId typeId{6};
 };
@@ -101,6 +135,11 @@ struct LinearVelocity : public BaseComponent
 /// coordinates
 struct WorldLinearVelocity : public LinearVelocity
 {
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: constexpr const static ComponentTypeId typeId{7};
 };
 
@@ -113,6 +152,11 @@ struct AngularVelocity : public BaseComponent
     return _os;
   }
 
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: Vector3i data;
   public: constexpr const static ComponentTypeId typeId{8};
 };
@@ -121,6 +165,11 @@ struct AngularVelocity : public BaseComponent
 /// coordinates
 struct WorldAngularVelocity : public AngularVelocity
 {
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: constexpr const static ComponentTypeId typeId{9};
 };
 
@@ -133,6 +182,11 @@ struct LinearAcceleration : public BaseComponent
     return _os;
   }
 
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: Vector3i data;
   public: constexpr const static ComponentTypeId typeId{10};
 };
@@ -141,6 +195,11 @@ struct LinearAcceleration : public BaseComponent
 /// coordinates
 struct WorldLinearAcceleration : public LinearAcceleration
 {
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: constexpr const static ComponentTypeId typeId{11};
 };
 
@@ -153,6 +212,11 @@ struct Pose : public BaseComponent
     return _os;
   }
 
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: Vector3i position;
   public: Quaternioni orientation;
   public: constexpr const static ComponentTypeId typeId{12};
@@ -161,6 +225,11 @@ struct Pose : public BaseComponent
 /// \brief A component representing an entity's pose in world coordinates
 struct WorldPose : public Pose
 {
+  public: ComponentTypeId DerivedTypeId() const
+  {
+    return this->typeId;
+  }
+
   public: constexpr const static ComponentTypeId typeId{13};
 };
 

@@ -2,21 +2,29 @@
 #define SIMPLE_ECM_BENCHMARK_RUNNER_HH_
 
 #include <functional>
+#include <vector>
 
 #include "benchmark/BenchmarkRunner.hh"
 #include "simpleECM/Components.hh"
 #include "simpleECM/Ecm.hh"
+#include "simpleECM/Types.hh"
 
 class SimpleECMBenchmarkRunner : public BenchmarkRunner
 {
   /// \brief Documentation inherited
-  public: void Init() final;
+  public: void Init(const std::size_t _numEntitiesToModify) final;
 
   /// \brief Documentation inherited
   public: void MakeEntityWithComponents() final;
 
   /// \brief Documentation inherited
   public: void EachImplementation() final;
+
+  /// \brief Documentation inherited
+  public: void RemoveAComponent() final;
+
+  /// \brief Documentation inherited
+  public: void AddAComponent() final;
 
   /// \brief The ECM that is being benchmarked
   private: ECM simpleEcm;
@@ -37,10 +45,16 @@ class SimpleECMBenchmarkRunner : public BenchmarkRunner
 
   /// \brief Callback function that is used in EachImplementation
   private: AllComponentEachFunc findAllComponents;
+
+  /// \brief Keep track of the entities that should have a component removed
+  /// or added
+  private: std::vector<Entity> entitiesToModify;
 };
 
-void SimpleECMBenchmarkRunner::Init()
+void SimpleECMBenchmarkRunner::Init(const std::size_t _numEntitiesToModify)
 {
+  this->numEntitiesToModify = _numEntitiesToModify;
+
   this->findAllComponents =
     [this](const Entity &,
            Name *,
@@ -72,12 +86,27 @@ void SimpleECMBenchmarkRunner::MakeEntityWithComponents()
   this->simpleEcm.AddComponent(entity, WorldLinearAcceleration());
   this->simpleEcm.AddComponent(entity, Pose());
   this->simpleEcm.AddComponent(entity, WorldPose());
+
+  if (this->entitiesToModify.size() < this->numEntitiesToModify)
+    this->entitiesToModify.push_back(entity);
 }
 
 void SimpleECMBenchmarkRunner::EachImplementation()
 {
   this->entityCount = 0;
   this->simpleEcm.Each(this->findAllComponents);
+}
+
+void SimpleECMBenchmarkRunner::RemoveAComponent()
+{
+  for (auto &entity : this->entitiesToModify)
+    this->simpleEcm.RemoveComponent<LinearVelocity>(entity);
+}
+
+void SimpleECMBenchmarkRunner::AddAComponent()
+{
+  for (auto &entity : this->entitiesToModify)
+    this->simpleEcm.AddComponent(entity, LinearVelocity());
 }
 
 #endif

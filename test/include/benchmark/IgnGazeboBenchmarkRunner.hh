@@ -1,6 +1,8 @@
 #ifndef IGN_GAZEBO_BENCHMARK_RUNNER_HH_
 #define IGN_GAZEBO_BENCHMARK_RUNNER_HH_
 
+#include <vector>
+
 #include <ignition/gazebo/Entity.hh>
 #include <ignition/gazebo/EntityComponentManager.hh>
 #include <ignition/gazebo/components/AngularVelocity.hh>
@@ -15,7 +17,7 @@
 class IgnGazeboBenchmarkRunner : public BenchmarkRunner
 {
   /// \brief Documentation inherited
-  public: void Init() final;
+  public: void Init(const std::size_t _numEntitiesToModify) final;
 
   /// \brief Documentation inherited
   public: void MakeEntityWithComponents() final;
@@ -23,12 +25,23 @@ class IgnGazeboBenchmarkRunner : public BenchmarkRunner
   /// \brief Documentation inherited
   public: void EachImplementation() final;
 
+  /// \brief Documentation inherited
+  public: void RemoveAComponent() final;
+
+  /// \brief Documentation inherited
+  public: void AddAComponent() final;
+
   /// \brief ECM
-  public: ignition::gazebo::EntityComponentManager ecm;
+  private: ignition::gazebo::EntityComponentManager ecm;
+
+  /// \brief Keep track of the entities that should have a component removed
+  /// or added
+  private: std::vector<ignition::gazebo::Entity> entitiesToModify;
 };
 
-void IgnGazeboBenchmarkRunner::Init()
+void IgnGazeboBenchmarkRunner::Init(const std::size_t _numEntitiesToModify)
 {
+  this->numEntitiesToModify = _numEntitiesToModify;
 }
 
 void IgnGazeboBenchmarkRunner::MakeEntityWithComponents()
@@ -46,6 +59,9 @@ void IgnGazeboBenchmarkRunner::MakeEntityWithComponents()
   this->ecm.CreateComponent(entity, components::WorldLinearAcceleration());
   this->ecm.CreateComponent(entity, components::Pose());
   this->ecm.CreateComponent(entity, components::WorldPose());
+
+  if (this->entitiesToModify.size() < this->numEntitiesToModify)
+    this->entitiesToModify.push_back(entity);
 }
 
 void IgnGazeboBenchmarkRunner::EachImplementation()
@@ -73,6 +89,24 @@ void IgnGazeboBenchmarkRunner::EachImplementation()
       this->entityCount++;
       return true;
     });
+}
+
+void IgnGazeboBenchmarkRunner::RemoveAComponent()
+{
+  for (auto &entity : this->entitiesToModify)
+  {
+    this->ecm.RemoveComponent<ignition::gazebo::components::LinearVelocity>(
+        entity);
+  }
+}
+
+void IgnGazeboBenchmarkRunner::AddAComponent()
+{
+  for (auto &entity : this->entitiesToModify)
+  {
+    this->ecm.CreateComponent(entity,
+        ignition::gazebo::components::LinearVelocity());
+  }
 }
 
 #endif
