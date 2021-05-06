@@ -108,42 +108,35 @@ int main(int argc, char **argv)
     {
       std::cout << std::endl;
 
-      // remove components from entities, and then call Each(...) a few times
-      benchmarkRunner->StartTimer();
-      benchmarkRunner->RemoveAComponent();
-      benchmarkRunner->StopTimer();
-      benchmarkRunner->DisplayElapsedTime("Removing a component from "
-          + std::to_string(numEntitiesAddRemoveComp) + " entities took ");
-      std::cout << "Calling Each(...) " << numEachCalls <<
-        " times on the entities that didn't have a component removed:"
-        << std::endl;
       for (auto i = 0; i < numEachCalls; ++i)
       {
+        // remove components from entities, and then call Each(...)
+        benchmarkRunner->StartTimer();
+        benchmarkRunner->RemoveAComponent();
+        benchmarkRunner->StopTimer();
+        benchmarkRunner->DisplayElapsedTime("Removing a component from "
+            + std::to_string(numEntitiesAddRemoveComp) + " entities: ");
         benchmarkRunner->StartTimer();
         benchmarkRunner->EachImplementation();
         benchmarkRunner->StopTimer();
         if (benchmarkRunner->Valid(
               numEntitiesCreated - numEntitiesAddRemoveComp))
-          benchmarkRunner->DisplayElapsedTime();
-      }
-      std::cout << std::endl;
+          benchmarkRunner->DisplayElapsedTime("Each(...): ");
 
-      // add components to entities, and then call Each(...) a few times
-      benchmarkRunner->StartTimer();
-      benchmarkRunner->AddAComponent();
-      benchmarkRunner->StopTimer();
-      benchmarkRunner->DisplayElapsedTime("Adding a component to "
-          + std::to_string(numEntitiesAddRemoveComp) + " entities took ");
-      std::cout << "Calling Each(...) " << numEachCalls <<
-        " times on the entities that have all components:" << std::endl;
-      for (auto i = 0; i < numEachCalls; ++i)
-      {
+        // add components to entities, and then call Each(...)
+        benchmarkRunner->StartTimer();
+        benchmarkRunner->AddAComponent();
+        benchmarkRunner->StopTimer();
+        benchmarkRunner->DisplayElapsedTime("Adding a component to "
+            + std::to_string(numEntitiesAddRemoveComp) + " entities: ");
         benchmarkRunner->StartTimer();
         benchmarkRunner->EachImplementation();
         benchmarkRunner->StopTimer();
         if (benchmarkRunner->Valid(numEntitiesCreated))
-          benchmarkRunner->DisplayElapsedTime();
+          benchmarkRunner->DisplayElapsedTime("Each(...): ");
       }
+
+      std::cout << std::endl;
     }
 
     delete benchmarkRunner;

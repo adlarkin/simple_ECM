@@ -130,7 +130,8 @@ void ECM::AddComponent(const Entity &_entity, const ComponentTypeT &_component)
 
   for (auto &[compTypes, view] : this->views)
   {
-    if (this->HasAllComponents(_entity, compTypes))
+    if (!view->HasEntity(_entity) && !view->HasNewEntity(_entity) &&
+        this->HasAllComponents(_entity, compTypes))
       view->AddNewEntity(_entity);
   }
 }

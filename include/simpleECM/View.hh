@@ -16,6 +16,22 @@ class BaseView
     return this->entities;
   }
 
+  /// \brief Check if an entity is a part of the view
+  /// \param[in] _entity The entity
+  /// \return true if _entity is a part of the view, false otherwise
+  public: bool HasEntity(const Entity &_entity) const
+  {
+    return this->entities.find(_entity) != this->entities.end();
+  }
+
+  /// \brief Check if an entity is marked as an entity to be added to the view
+  /// \param[in] _entity The entity
+  /// \return true if _entity is to be added to the view, false otherwise
+  public: bool HasNewEntity(const Entity &_entity) const
+  {
+    return this->newEntities.find(_entity) != this->newEntities.end();
+  }
+
   /// \brief Remove an entity from the view, whether it's an entity that already
   /// exists in the view or is a new entity to be added to the view
   /// \param[in] _entity The entity
@@ -29,14 +45,13 @@ class BaseView
   }
 
   /// \brief Add a new entity to the view. This entity's component data should
-  /// be added to the view the next time the view is being used. If the new
-  /// entity being added already exists in the view, then this new entity is
-  /// ignored
+  /// be added to the view the next time the view is being used. It is assumed
+  /// that this new entity isn't already associated with the view
   /// \param[in] _entity The new entity
+  /// \sa HasEntity HasNewEntity
   public: void AddNewEntity(const Entity &_entity)
   {
-    if (this->entities.find(_entity) == this->entities.end())
-      this->newEntities.insert(_entity);
+    this->newEntities.insert(_entity);
   }
 
   /// \brief Remove all of the new entities from the view. This should be called
