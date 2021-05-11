@@ -25,6 +25,11 @@ struct BaseComponent
   /// \return The typeId of the derived component
   public: virtual ComponentTypeId DerivedTypeId() const = 0;
 
+  /// \brief Whether this component should be ignored or not. This is used
+  /// internally by the ECM to handle component addition and removal, and should
+  /// not be used outside of the ECM
+  public: bool ignore{false};
+
   public: constexpr const static ComponentTypeId typeId{kInvalidComponent};
 };
 

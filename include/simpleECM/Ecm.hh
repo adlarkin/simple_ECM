@@ -18,6 +18,10 @@ class ECM
   /// \return The Entity that was created
   public: Entity CreateEntity();
 
+  // TODO handle adding/removing a component before Each is called. In this
+  // case, the entity with this component may try to be added to a view when it
+  // shouldn't be
+
   /// \brief Add a component to an entity (the entity must already exist)
   /// \param[in] _entity The entity
   /// \param[in] _component The component
@@ -46,25 +50,41 @@ class ECM
   private: template<typename ...ComponentTypeTs>
            View<ComponentTypeTs...> *FindView();
 
-  /// \brief Check if an entity has a component of a particular type
+  /// \brief Check if an entity has a reference to a component of a particular
+  /// type. This does not indicate whether the component being referred to is
+  /// valid/being used by the entity or not (the component may have been removed
+  /// after it was originally added to the entity). The Component method should
+  /// be used to learn more about the state of the referenced component, if a
+  /// reference exists
   /// \param[in] _entity The entity
   /// \param[in] _typeId The component type
-  /// \return true if _entity has a component of _typeId, false otherwise
-  /// (false is returned if _entity does not exist)
+  /// \return true if _entity has a reference to a component of _typeId, false
+  /// otherwise (false is returned if _entity does not exist)
+  /// \sa Component
   private: bool HasComponent(const Entity &_entity,
+               const ComponentTypeId &_typeId) const;
+
+  private: bool HasValidComponent(const Entity &_entity,
                const ComponentTypeId &_typeId) const;
 
   /// \brief Get the pointer to an entity's component of a particular type
   /// \param[in] _entity The entity
-  /// \return The pointer to the component, if it exists. Otherwise, nullptr
+  /// \return The pointer to the component (nullptr if the component doesn't
+  /// exist). If the pointer isn't nullptr, the ignore flag of the component
+  /// should be checked to see if this component is being used by _entity or
+  /// not. Ignore is true if _entity isn't using this component (i.e., the
+  /// component was added to _entity but later removed from _entity) Ignore is
+  /// false if _entity is using this component (i.e., the component was added to
+  /// _entity and has not been removed)
+  /// \sa HasComponent
   private: template<typename ComponentTypeT>
            ComponentTypeT *Component(const Entity &_entity) const;
 
-  /// \brief See if an entity has a list of component types
+  /// \brief See if an entity has a list of valid component types
   /// \param[in] _entity The entity
   /// \param[in] _compTypes The types of components
-  /// \return true if _entity has each type of component in _compTypes, false
-  /// otherwise
+  /// \return true if _entity has each type of component in _compTypes as valid
+  /// references, false otherwise
   private: bool HasAllComponents(const Entity &_entity,
                const std::vector<ComponentTypeId> &_compTypes) const;
 
@@ -119,23 +139,59 @@ Entity ECM::CreateEntity()
 template<typename ComponentTypeT>
 void ECM::AddComponent(const Entity &_entity, const ComponentTypeT &_component)
 {
-  if (this->HasComponent(_entity, ComponentTypeT::typeId))
-    return;
+  // check to see if a component of type ComponentTypeT::typeId already exists
+  // for _entity. There are a few cases to consider:
+  // 1. A component of this type was added to _entity previously
+  //    a. If this component wasn't removed, this component's ignore flag is
+  //       false, so the request to add a new component should be ignored
+  //    b. If this component was removed, this component's ignore flag is true,
+  //       so this component should be modified directly to contain the data
+  //       contained in _component
+  // 2. A component of this type was never added to _entity previously. In this
+  //    case, a new component needs to be created and added to _entity, and
+  //    _entity may need to be added to views that have this component type
 
+  if (this->HasComponent(_entity, ComponentTypeT::typeId))
+  {
+    auto existingCompPtr = this->Component<ComponentTypeT>(_entity);
+    // case 1b
+    if (existingCompPtr->ignore)
+    {
+      // update the component data and notify relevant views that _entity had a
+      // component update in case _entity once again meets the component
+      // requirements of the view
+      *existingCompPtr = _component;
+      existingCompPtr->ignore = false;
+      for (auto &[compTypes, view] : this->views)
+      {
+        if (view->HasComponent(ComponentTypeT::typeId))
+        {
+          if (view->HasComponentData(_entity))
+            view->NotifyComponentAddition(_entity, ComponentTypeT::typeId);
+          else if (this->HasAllComponents(_entity, compTypes))
+            view->AddNewEntity(_entity);
+        }
+      }
+    }
+    // (if the check above for case 1b failed, conditions for case 1a are met,
+    // which means do nothing/ignore the add component request)
+    return;
+  }
+
+  // case 2
   auto entityCompIter = this->entityComponents.find(_entity);
   auto vectorIdx = entityCompIter->second.size();
   entityCompIter->second.push_back(
       std::make_shared<ComponentTypeT>(_component));
   this->componentTypeIndex[_entity][ComponentTypeT::typeId] = vectorIdx;
-
   for (auto &[compTypes, view] : this->views)
   {
-    if (!view->HasEntity(_entity) && !view->HasNewEntity(_entity) &&
+    //if (!view->HasEntity(_entity) && !view->HasNewEntity(_entity) &&
+    if (!view->HasComponentData(_entity) && !view->HasNewEntity(_entity) &&
         this->HasAllComponents(_entity, compTypes))
       view->AddNewEntity(_entity);
   }
 }
-
 
 template<typename ComponentTypeT>
 void ECM::RemoveComponent(const Entity &_entity)
@@ -143,29 +199,21 @@ void ECM::RemoveComponent(const Entity &_entity)
   if (!this->HasComponent(_entity, ComponentTypeT::typeId))
     return;
 
-  // remove the component
-  //  - if the component to remove is the last component in the entity's vector
-  //    of components, simply pop off the last component from the vector
-  //  - if the component to remove is not the last component in the entity's
-  //    vector of components, swap it with the last component in the vector and
-  //    then pop off the last component in the vector
-  const auto removalCompIdx =
-    this->componentTypeIndex[_entity][ComponentTypeT::typeId];
-  if (removalCompIdx != (this->entityComponents[_entity].size() - 1))
+  auto compPtr = this->Component<ComponentTypeT>(_entity);
+  if (!compPtr->ignore)
   {
-    const auto lastBaseComp = this->entityComponents[_entity].back();
-    this->componentTypeIndex[_entity][lastBaseComp->DerivedTypeId()] =
-      removalCompIdx;
-    this->entityComponents[_entity][removalCompIdx] = lastBaseComp;
-  }
-  this->entityComponents[_entity].pop_back();
-  this->componentTypeIndex[_entity].erase(ComponentTypeT::typeId);
-
-  // remove the entity from the views that have this component
-  for (auto &[compTypes, view] : this->views)
-  {
-    if (view->HasComponent(ComponentTypeT::typeId))
-      view->RemoveEntity(_entity);
+    compPtr->ignore = true;
+    for (auto &[compTypes, view] : this->views)
+    {
+      // notify relevant views that a component has been removed from _entity
+      // (_entity no longer meets the component requirements for views that
+      // contain component data of type ComponentTypeT::typeId)
+      if (view->HasComponent(ComponentTypeT::typeId) &&
+          view->HasComponentData(_entity))
+      {
+        view->NotifyComponentRemoval(_entity, ComponentTypeT::typeId);
+      }
+    }
   }
 }
 
@@ -233,6 +281,17 @@ bool ECM::HasComponent(const Entity &_entity,
          typeMapIter->second.find(_typeId) != typeMapIter->second.end();
 }
 
+// TODO clean this up and turn it into something more useful
+bool ECM::HasValidComponent(const Entity &_entity,
+    const ComponentTypeId &_typeId) const
+{
+  auto typeMapIter = this->componentTypeIndex.find(_entity);
+  return typeMapIter != this->componentTypeIndex.end() &&
+         typeMapIter->second.find(_typeId) != typeMapIter->second.end() &&
+         !this->entityComponents.at(_entity)
+          .at(typeMapIter->second.find(_typeId)->second)->ignore;
+}
+
 template<typename ComponentTypeT>
 ComponentTypeT *ECM::Component(const Entity &_entity) const
 {
@@ -251,7 +310,7 @@ bool ECM::HasAllComponents(const Entity &_entity,
 {
   for (const auto &type : _compTypes)
   {
-    if (!this->HasComponent(_entity, type))
+    if (!this->HasValidComponent(_entity, type))
       return false;
   }
 
