@@ -5,6 +5,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 
 #include "simpleECM/Types.hh"
 
@@ -165,9 +166,9 @@ class View : public BaseView
     missingCompsIter->second.erase(_typeId);
     if (missingCompsIter->second.empty())
     {
-      this->validData[_entity] = this->invalidData[_entity];
+      auto nh = this->invalidData.extract(_entity);
+      this->validData.insert(std::move(nh));
       this->entities.insert(_entity);
-      this->invalidData.erase(_entity);
       this->missingCompTracker.erase(_entity);
     }
   };
@@ -179,15 +180,14 @@ class View : public BaseView
     // if the component being removed is the first component that causes _entity
     // to be invalid for this view, move _entity from validData to invalidData
     // and make sure _entity isn't considered a part of the view
-    if (this->validData.find(_entity) != this->validData.end())
+    auto it = this->validData.find(_entity);
+    if (it != this->validData.end())
     {
-      this->invalidData[_entity] = this->validData[_entity];
-      this->validData.erase(_entity);
+      auto nh = this->validData.extract(it);
+      this->invalidData.insert(std::move(nh));
       this->entities.erase(_entity);
-      this->missingCompTracker[_entity] = {_typeId};
     }
-    else
-      this->missingCompTracker[_entity].insert(_typeId);
+    this->missingCompTracker[_entity].insert(_typeId);
   };
 
   /// \brief A map of entities to their component data
